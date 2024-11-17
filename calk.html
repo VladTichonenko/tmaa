@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cryptocurrency Calculator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <style>
+        body {
+            background-color: #000;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .calculator-container {
+            background-color: #000000df;
+            padding: 20px;
+            border-radius: 15px;
+            width: 300px;
+            box-shadow: 0px 0px 40px rgba(0, 170, 255, 0.4);
+            text-align: center;
+        }
+        .top-bar {
+            display: flex;
+            justify-content: flex-start;
+            width: 100%;
+            position: absolute;
+            top: 10px;
+            padding: 10px;
+        }
+        .back-button {
+            cursor: pointer;
+            font-size: 2.5em;
+            font-weight: bold;
+            color: #4c8cff;
+            margin-left: 10px;
+            text-transform: uppercase;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            transition: color 0.3s, transform 0.3s;
+        }
+        .back-button:hover {
+            color: #fff;
+            transform: scale(1.1);
+        }
+        label {
+            font-size: 0.9em;
+        }
+        select, input[type="number"], input[type="range"] {
+            width: 100%;
+            margin: 5px 0;
+            padding: 5px;
+            border-radius: 5px;
+            border: none;
+            background-color: #303030;
+            color: #ffffff;
+        }
+        input[type="range"] {
+            background-color: #4c8cff;
+        }
+        .results {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 10px;
+            background-color: #1a1a1a;
+        }
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <!-- Кнопка для возврата на страницу index1 -->
+        <span class="back-button" onclick="goToHome()"><i class="fa-solid fa-circle-xmark"></i></span>
+    </div>
+
+    <div class="calculator-container">
+        <!-- Result section -->
+        <div class="results">
+            <p>Coin Quantity: <span id="coinQuantity">0.000000</span></p>
+            <p>Take-Profit Price: $<span id="takeProfitPrice">0.00</span></p>
+            <p>Stop-Loss Price: $<span id="stopLossPrice">0.00</span></p>
+        </div>
+
+        <!-- Cryptocurrency selection -->
+        <div class="full-width">
+            <label for="crypto">Cryptocurrency:</label>
+            <select id="crypto">
+                <option value="btc">BTC</option>
+                <option value="doge">DOGE</option>
+            </select>
+        </div>
+
+        <!-- Input sliders for parameters -->
+        <div class="input-group">
+            <label for="deposit">Deposit ($):</label>
+            <input type="number" id="deposit" min="10" max="10000" step="10" value="1000">
+            <input type="range" id="deposit-slider" min="10" max="10000" step="10" value="1000">
+        </div>
+
+        <div class="input-group">
+            <label for="leverage">Leverage (x):</label>
+            <input type="number" id="leverage" min="1" max="100" value="10">
+            <input type="range" id="leverage-slider" min="1" max="100" value="10">
+        </div>
+
+        <div class="input-group">
+            <label for="entry">Opening Price ($):</label>
+            <input type="number" id="entry" min="1" max="100000" step="1" value="20000">
+            <input type="range" id="entry-slider" min="1" max="100000" step="1" value="20000">
+        </div>
+
+        <div class="input-group">
+            <label for="stopLoss">Loss in ($):</label>
+            <input type="number" id="stopLoss" min="1" max="100000" step="1" value="19000">
+            <input type="range" id="stopLoss-slider" min="1" max="100000" step="1" value="19000">
+        </div>
+
+        <div class="input-group">
+            <label for="takeProfit">Income in ($):</label>
+            <input type="number" id="takeProfit" min="1" max="100000" step="1" value="0">
+            <input type="range" id="takeProfit-slider" min="1" max="100000" step="1" value="0">
+        </div>
+    </div>
+
+    <script>
+        // Synchronize number inputs and sliders
+        function syncSliderWithInput(sliderId, inputId) {
+            const slider = document.getElementById(sliderId);
+            const input = document.getElementById(inputId);
+
+            slider.oninput = () => {
+                input.value = slider.value;
+                calculateResults();
+            };
+            input.oninput = () => {
+                slider.value = input.value;
+                calculateResults();
+            };
+        }
+
+        syncSliderWithInput('deposit-slider', 'deposit');
+        syncSliderWithInput('leverage-slider', 'leverage');
+        syncSliderWithInput('entry-slider', 'entry');
+        syncSliderWithInput('stopLoss-slider', 'stopLoss');
+        syncSliderWithInput('takeProfit-slider', 'takeProfit');
+
+        function calculateResults() {
+            const deposit = parseFloat(document.getElementById('deposit').value) || 0;
+            const leverage = parseFloat(document.getElementById('leverage').value) || 0;
+            const openingPrice = parseFloat(document.getElementById('entry').value) || 0;
+            const stopLoss = parseFloat(document.getElementById('stopLoss').value) || 0;
+            const takeProfit = parseFloat(document.getElementById('takeProfit').value) || 0;
+
+            if (deposit > 0 && leverage > 0 && openingPrice > 0 && stopLoss > 0 && takeProfit >= 0) {
+                const coinQuantity = (deposit / openingPrice) * leverage;
+                const takeProfitPrice = openingPrice + (takeProfit / coinQuantity);
+                const stopLossPrice = openingPrice - (stopLoss / coinQuantity);
+
+                document.getElementById('coinQuantity').textContent = coinQuantity.toFixed(6);
+                document.getElementById('takeProfitPrice').textContent = takeProfitPrice.toFixed(2);
+                document.getElementById('stopLossPrice').textContent = stopLossPrice.toFixed(2);
+            }
+        }
+
+        // Initial calculation
+        calculateResults();
+
+        // Function for going to the home page (index1.html)
+        function goToHome() {
+            window.location.href = 'index1.html';
+        }
+    </script>
+</body>
+</html>

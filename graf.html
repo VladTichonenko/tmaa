@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Crypto News Portal</title>
+  <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #333;
+      color: white;
+    }
+    header {
+      background-color: #4c8cff;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+    .search-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 20px;
+    }
+    .search-container input {
+      width: 60%;
+      padding: 15px;
+      border: none;
+      border-radius: 5px;
+      font-size: 18px;
+      margin-right: 10px;
+    }
+    .search-container i {
+      cursor: pointer;
+      color: white;
+      font-size: 20px;
+    }
+    .news-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+      max-width: 500px;
+      height: 300px;
+      margin: 0 auto;
+      background: #4c8cff;
+      border: 2px solid white;
+      border-radius: 15px;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+      overflow: hidden;
+    }
+    .card {
+      flex: 0 0 100%;
+      display: none;
+      text-align: center;
+      padding: 20px;
+      font-size: 24px;
+      animation: fade-in 0.5s ease-in-out;
+    }
+    .card.active {
+      display: block;
+    }
+    @keyframes fade-in {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    .social-icons {
+      text-align: center;
+      margin-top: 15px;
+    }
+    .social-icons i {
+      color: white;
+      font-size: 30px;
+      margin: 0 10px;
+      cursor: pointer;
+      transition: color 0.3s;
+    }
+    .social-icons i:hover {
+      color: #333;
+    }
+    .controls {
+      text-align: center;
+      margin-top: 10px;
+    }
+    .controls button {
+      padding: 10px 20px;
+      margin: 5px;
+      border: none;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+    .controls .prev-button {
+      background-color: #ff4c4c; /* Красноватый */
+    }
+    .controls .prev-button:hover {
+      background-color: #cc3d3d;
+    }
+    .controls .next-button {
+      background-color: #4cff72; /* Зеленоватый */
+    }
+    .controls .next-button:hover {
+      background-color: #3dcc5c;
+    }
+    /* Bottom Navigation */
+    .bottom-nav {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      height: 65px;
+      background-color: #1e1e1e;
+      border-top: 2px solid #4c8cff;
+    }
+    .nav-item {
+      color: #4c8cff;
+      font-size: 24px;
+      cursor: pointer;
+      transition: color 0.3s;
+    }
+    .nav-item.active {
+      color: #ffffff;
+    }
+    .nav-item:hover {
+      color: #ffffff;
+    }
+    #open-search {
+      color: white; /* Белая кнопка */
+    }
+  </style>
+</head>
+<body>
+  <div class="search-container">
+    <input type="text" placeholder="Search...">
+    <i class="fa-solid fa-magnifying-glass"></i>
+  </div>
+  <div class="news-container">
+    <div class="card active">1. Bitcoin hits a new 2024 high, crossing $50,000 mark.</div>
+    <div class="card">2. Ethereum's Shanghai update boosts staking withdrawals.</div>
+    <div class="card">3. Ripple's SEC lawsuit verdict reshapes crypto regulations.</div>
+    <div class="card">4. Binance introduces zero-fee trading for selected pairs.</div>
+    <div class="card">5. El Salvador celebrates 3rd year of Bitcoin as legal tender.</div>
+  </div>
+  
+  <div class="controls">
+    <button class="prev-button" onclick="prevCard()">Previous</button>
+    <button class="next-button" onclick="nextCard()">Next</button>
+  </div>
+
+  <div class="social-icons">
+    <i class="fa-brands fa-youtube"></i>
+    <i class="fa-brands fa-tiktok"></i>
+    <i class="fa-brands fa-telegram"></i>
+  </div>
+  <!-- Bottom Navigation -->
+  <nav class="bottom-nav">
+    <div class="nav-item" id="open-glav"><i class="fa-solid fa-house"></i></div>
+    <div class="nav-item" id="open-chart"><i class="fa-solid fa-chart-line"></i></div>
+    <div class="nav-item" id="open-search"><i class="fa-regular fa-newspaper"></i></div>
+    <div class="nav-item"><i class="fa-solid fa-star"></i></div>
+  </nav>
+  <script>
+    let currentCard = 0;
+    const cards = document.querySelectorAll('.card');
+
+    function showCard(index) {
+      cards.forEach((card, i) => {
+        card.classList.toggle('active', i === index);
+      });
+    }
+
+    function prevCard() {
+      currentCard = (currentCard > 0) ? currentCard - 1 : cards.length - 1;
+      showCard(currentCard);
+    }
+
+    function nextCard() {
+      currentCard = (currentCard < cards.length - 1) ? currentCard + 1 : 0;
+      showCard(currentCard);
+    }
+
+    // Animation for search icon
+    const searchInput = document.querySelector('.search-container input');
+    const searchIcon = document.querySelector('.search-container i');
+    searchInput.addEventListener('focus', () => {
+      searchIcon.style.color = '#1e1e1e';
+    });
+    searchInput.addEventListener('blur', () => {
+      searchIcon.style.color = 'white';
+    });
+
+    document.getElementById('open-chart').addEventListener('click', function() {
+    console.log("Navigating to search page..."); // Отладка
+    window.location.href = 'Chart.html';
+});
+
+ // Обработчики для кнопок нижней панели
+ const openGlavButton = document.getElementById("open-glav");
+        const openChartButton = document.getElementById("open-chart");
+
+        openGlavButton.addEventListener("click", () => {
+            window.location.href = "index1.html";
+        });
+  </script>
+</body>
+</html>
